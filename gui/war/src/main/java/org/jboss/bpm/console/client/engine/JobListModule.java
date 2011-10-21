@@ -30,7 +30,7 @@ import org.jboss.errai.workspaces.client.api.WidgetProvider;
 import org.jboss.errai.workspaces.client.api.annotations.LoadTool;
 
 @LoadTool(name = "Jobs", group = "Runtime", icon="jobsIcon")
-@RequireRoles({"administrator"})
+@RequireRoles({"admin"})
 public class JobListModule implements WidgetProvider
 {
   static JobListView instance;

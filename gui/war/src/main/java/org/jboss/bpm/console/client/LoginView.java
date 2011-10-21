@@ -59,7 +59,7 @@ public class LoginView implements ViewInterface
     private TextBox usernameInput;
     private PasswordTextBox passwordInput;
 
-    public final static String[] KNOWN_ROLES = {"administrator", "manager", "user"};
+    public final static String[] KNOWN_ROLES = {"admin", "manager", "user"};
 
     private HTML messagePanel = new HTML("Authentication required");
 
