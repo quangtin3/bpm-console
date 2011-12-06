@@ -4,13 +4,13 @@
     <name>JBoss BPM - Console</name>
     <groupId>org.jboss.bpm</groupId>
     <artifactId>gwt-console-parent</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.3.0.Final</version>
     <packaging>pom</packaging>
 
     <description>BPM Management console used by Riftsaw, jBPM and Drools Flow</description>
 
     <url>
-        http://github.com/heiko-braun/bpm-console
+        https://github.com/bpmc/bpm-console
     </url>
 
     <scm>
