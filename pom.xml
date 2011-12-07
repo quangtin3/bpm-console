@@ -81,7 +81,7 @@
         <!--mosaic.version>0.4.0-rc4</mosaic.version-->
         <resteasy.version>2.2.1.GA</resteasy.version>
         <stax-api.version>1.0-2</stax-api.version>
-        <report.server.version>1.4.0.Final</report.server.version>
+        <report.server.version>1.4.1.Final</report.server.version>
 
         <errai.version>1.1-Final</errai.version>
         <mvel.version>2.0.18-RC4</mvel.version>
