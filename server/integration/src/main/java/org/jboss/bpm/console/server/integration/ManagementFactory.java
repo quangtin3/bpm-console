@@ -23,11 +23,11 @@ package org.jboss.bpm.console.server.integration;
 
 // $Id: $
 
-import org.jboss.bpm.console.server.util.ServiceLoader;
+import org.jboss.bpm.console.server.utils.ServiceLoader;
 
 /**
  * Construct management implementation.
- * It uses the {@link org.jboss.bpm.console.server.util.ServiceLoader} to load concrete
+ * It uses the {@link org.jboss.bpm.console.server.utils.ServiceLoader} to load concrete
  * factory implementations. 
  *
  * @author Heiko.Braun <heiko.braun@jboss.com>

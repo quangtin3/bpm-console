@@ -21,8 +21,8 @@
  */
 package org.jboss.bpm.console.server.plugin;
 
-import org.jboss.bpm.console.server.util.ServiceLoader;
-import org.jboss.bpm.console.server.util.InvocationProxy;
+import org.jboss.bpm.console.server.utils.InvocationProxy;
+import org.jboss.bpm.console.server.utils.ServiceLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Loads plugins through the {@link org.jboss.bpm.console.server.util.ServiceLoader}.
+ * Loads plugins through the {@link org.jboss.bpm.console.server.utils.ServiceLoader}.
  *
  * @author Heiko.Braun <heiko.braun@jboss.com>
  */
@@ -40,7 +40,7 @@ public class PluginMgr
   private static final Log log = LogFactory.getLog(PluginMgr.class);
   private static List<String> failedToResolve = new CopyOnWriteArrayList<String>();
   /**
-   * Load a plugin through the {@link org.jboss.bpm.console.server.util.ServiceLoader}.
+   * Load a plugin through the {@link org.jboss.bpm.console.server.utils.ServiceLoader}.
    * The plugin interface name acts as the service key.
    *
    * @param type plugin interface
