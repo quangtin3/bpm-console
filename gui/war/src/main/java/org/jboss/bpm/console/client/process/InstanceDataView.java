@@ -43,168 +43,154 @@ import java.util.List;
 /**
  * @author Heiko.Braun <heiko.braun@jboss.com>
  */
-public class InstanceDataView extends MosaicPanel implements ViewInterface, LazyPanel
-{
-  public final static String ID = InstanceDataView.class.getName();
+public class InstanceDataView extends MosaicPanel implements ViewInterface,
+		LazyPanel {
+	public final static String ID = InstanceDataView.class.getName();
 
-  private Controller controller;
+	private Controller controller;
 
-  private ListBox listBox;
+	private ListBox listBox;
 
-  private String instanceId;
+	private String instanceId;
 
-  private boolean isInitialized;
+	private boolean isInitialized;
 
-  boolean isRiftsawInstance = false;
+	boolean isRiftsawInstance = false;
 
-  public InstanceDataView()
-  {
-    super();
-    this.setPadding(5);
-    ApplicationContext appContext = Registry.get(ApplicationContext.class);
-    isRiftsawInstance = appContext.getConfig().getProfileName().equals("BPEL Console");    
-  }
+	public InstanceDataView() {
+		super();
+		this.setPadding(5);
+		ApplicationContext appContext = Registry.get(ApplicationContext.class);
+		isRiftsawInstance = appContext.getConfig().getProfileName()
+				.equals("BPEL Console");
+	}
 
-  @Override
 	public void clear() {
 		bindData(Collections.EMPTY_LIST);
 	}
 
-public void initialize()
-  {
-    if(!isInitialized)
-    {
-      listBox =
-          new ListBox<Node>(
-              new String[] {
-                  "Key", "XSD Type", "Java Type", "Value"}
-          );
+	public void initialize() {
+		if (!isInitialized) {
+			listBox = new ListBox<Node>(new String[] { "Key", "XSD Type",
+					"Java Type", "Value" });
 
-      listBox.setColumnResizePolicy(AbstractScrollTable.ColumnResizePolicy.MULTI_CELL);
-      
-      listBox.setCellRenderer(new ListBox.CellRenderer<DataEntry>() {
-        public void renderCell(ListBox<DataEntry> listBox, int row, int column,
-                               DataEntry item) {
-          switch (column) {
-            case 0:
-              listBox.setText(row, column, item.key);
-              break;
-            case 1:
-              listBox.setText(row, column, item.xsd);
-              break;
-            case 2:
-              listBox.setText(row,column, item.java);
-              break;
-            case 3:
-              if(isRiftsawInstance)
-              {
-                JSONTree tree = new JSONTree(item.value);
-                listBox.setWidget(row,column, tree);
-              }
-              else
-              {
-                listBox.setText(row,column, item.value);
-              }
-              break;
-            default:
-              throw new RuntimeException("Unexpected column size");
-          }
-        }
-      });
+			listBox.setColumnResizePolicy(AbstractScrollTable.ColumnResizePolicy.MULTI_CELL);
 
-      this.add(listBox);
+			listBox.setCellRenderer(new ListBox.CellRenderer<DataEntry>() {
+				public void renderCell(ListBox<DataEntry> listBox, int row,
+						int column, DataEntry item) {
+					switch (column) {
+					case 0:
+						listBox.setText(row, column, item.key);
+						break;
+					case 1:
+						listBox.setText(row, column, item.xsd);
+						break;
+					case 2:
+						listBox.setText(row, column, item.java);
+						break;
+					case 3:
+						if (isRiftsawInstance) {
+							JSONTree tree = new JSONTree(item.value);
+							listBox.setWidget(row, column, tree);
+						} else {
+							listBox.setText(row, column, item.value);
+						}
+						break;
+					default:
+						throw new RuntimeException("Unexpected column size");
+					}
+				}
+			});
 
-      this.isInitialized = true;
-    }
-  }
+			this.add(listBox);
 
-  public boolean isInitialized()
-  {
-    return isInitialized;
-  }
+			this.isInitialized = true;
+		}
+	}
 
-  public void setController(Controller controller)
-  {
-    this.controller = controller;
-  }
+	public boolean isInitialized() {
+		return isInitialized;
+	}
 
-  public void update(String instanceId, Document xml)
-  {
-    this.instanceId = instanceId;
-    parseMessage(xml);
-  }
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
 
-  private void parseMessage(Document messageDom)
-  {
-    try
-    {
-      // parse the XML document into a DOM
-      //Document messageDom = XMLParser.parse(messageXml);
+	public void update(String instanceId, Document xml) {
+		this.instanceId = instanceId;
+		parseMessage(xml);
+	}
 
-      Node dataSetNode = messageDom.getElementsByTagName("dataset").item(0);
-      List<Node> dataSetNodeChildren = DOMUtil.getChildElements(dataSetNode.getChildNodes());
-      List<DataEntry> results = new ArrayList<DataEntry>();
+	private void parseMessage(Document messageDom) {
+		try {
+			// parse the XML document into a DOM
+			// Document messageDom = XMLParser.parse(messageXml);
 
-      for(Node dataNode : dataSetNodeChildren)
-      {
-        DataEntry dataEntry = new DataEntry();
-        NamedNodeMap dataNodeAttributes = dataNode.getAttributes();
+			Node dataSetNode = messageDom.getElementsByTagName("dataset").item(
+					0);
+			List<Node> dataSetNodeChildren = DOMUtil
+					.getChildElements(dataSetNode.getChildNodes());
+			List<DataEntry> results = new ArrayList<DataEntry>();
 
-        Node valueNode = DOMUtil.getChildElements(dataNode.getChildNodes()).get(0); // expected to have just one child‚
-        NamedNodeMap valueNodeAttributes = valueNode.getAttributes();
+			for (Node dataNode : dataSetNodeChildren) {
+				DataEntry dataEntry = new DataEntry();
+				NamedNodeMap dataNodeAttributes = dataNode.getAttributes();
 
-        dataEntry.key = dataNodeAttributes.getNamedItem("key").getNodeValue();
-        dataEntry.java = dataNodeAttributes.getNamedItem("javaType").getNodeValue();
-        dataEntry.xsd = valueNodeAttributes.getNamedItem("xsi:type").getNodeValue();
+				Node valueNode = DOMUtil.getChildElements(
+						dataNode.getChildNodes()).get(0); // expected to have
+															// just one child‚
+				NamedNodeMap valueNodeAttributes = valueNode.getAttributes();
 
-        List<Node> valueChildElements = DOMUtil.getChildElements(valueNode.getChildNodes());
+				dataEntry.key = dataNodeAttributes.getNamedItem("key")
+						.getNodeValue();
+				dataEntry.java = dataNodeAttributes.getNamedItem("javaType")
+						.getNodeValue();
+				dataEntry.xsd = valueNodeAttributes.getNamedItem("xsi:type")
+						.getNodeValue();
 
-        if(valueChildElements.isEmpty()
-            && valueNode.hasChildNodes()
-            && Node.TEXT_NODE == valueNode.getChildNodes().item(0).getNodeType())
-        {
-          dataEntry.value = valueNode.getFirstChild().getNodeValue();          
-        }
-        else
-        {
-          // complex types or empty elements
-          dataEntry.value = "n/a";
-        }
+				List<Node> valueChildElements = DOMUtil
+						.getChildElements(valueNode.getChildNodes());
 
-        results.add(dataEntry);
-      }
+				if (valueChildElements.isEmpty()
+						&& valueNode.hasChildNodes()
+						&& Node.TEXT_NODE == valueNode.getChildNodes().item(0)
+								.getNodeType()) {
+					dataEntry.value = valueNode.getFirstChild().getNodeValue();
+				} else {
+					// complex types or empty elements
+					dataEntry.value = "n/a";
+				}
 
-      bindData(results);
-    }
-    catch (Throwable e)
-    {
-      ConsoleLog.error("Failed to parse XML document", e);
-    }
+				results.add(dataEntry);
+			}
 
-  }
+			bindData(results);
+		} catch (Throwable e) {
+			ConsoleLog.error("Failed to parse XML document", e);
+		}
 
-  private void bindData(List<DataEntry> data)
-  {
-    initialize();
+	}
 
-    final DefaultListModel<DataEntry> model =
-        (DefaultListModel<DataEntry>) listBox.getModel();
-    model.clear();
+	private void bindData(List<DataEntry> data) {
+		initialize();
 
-    for(DataEntry d : data)
-    {
-      model.add(d);
-    }
+		final DefaultListModel<DataEntry> model = (DefaultListModel<DataEntry>) listBox
+				.getModel();
+		model.clear();
 
-    // layout again
-    this.layout();
-  }
+		for (DataEntry d : data) {
+			model.add(d);
+		}
 
-  private class DataEntry
-  {
-    String key;
-    String xsd;
-    String java;
-    String value;
-  }
+		// layout again
+		this.layout();
+	}
+
+	private class DataEntry {
+		String key;
+		String xsd;
+		String java;
+		String value;
+	}
 }

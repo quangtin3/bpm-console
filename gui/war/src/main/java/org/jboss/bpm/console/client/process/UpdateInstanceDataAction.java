@@ -66,7 +66,6 @@ public class UpdateInstanceDataAction extends AbstractRESTAction
     view.update(id, messageDom);
   }
 
-  @Override
   protected void handleError(String url, Throwable t) {
 	  
 	String message = t.getMessage();
