@@ -27,6 +27,15 @@
         <scope>provided</scope>
         <type>war</type>
       </dependency>
+      <!-- used to explode sources for GWT-compile -->
+      <dependency>
+        <groupId>org.jboss.bpm</groupId>
+        <artifactId>gwt-console-app-base</artifactId>
+        <version>${project.version}</version>
+        <scope>provided</scope>
+        <classifier>sources</classifier>
+      </dependency>
+      <!-- used to explode/filter properties specific to app -->
       <dependency>
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-war-templates</artifactId>
@@ -37,11 +46,24 @@
 
     <!-- Plugins -->
     <build>
+      <sourceDirectory>${project.build.directory}/generated-sources/unpacked-gwt-sources</sourceDirectory>
       <pluginManagement>
         <plugins>
             <plugin>
               <artifactId>maven-dependency-plugin</artifactId>
               <executions>
+                <execution>
+                  <id>unpack-gwt-sources</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>unpack-dependencies</goal>
+                  </goals>
+                  <configuration>
+                    <includeArtifactIds>gwt-console-app-base</includeArtifactIds>
+                    <includeClassifiers>sources</includeClassifiers>
+                    <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
+                  </configuration>
+                </execution>
                 <execution>
                   <id>unpack-templates</id>
                   <phase>generate-resources</phase>
@@ -79,9 +101,18 @@
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
+                  <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
                     <webResources>
                       <webResource>
                         <directory>${project.build.directory}/filtered-templates</directory>
+                      </webResource>
+                      <webResource>
+                        <directory>${project.build.directory}/gwt-compiled</directory>
+                        <excludes>
+                            <exclude>app/.junit_symbolMaps/*.symbolMap</exclude>
+                            <exclude>app/junit.html</exclude>
+                            <exclude>app/junit-standards.html</exclude>
+                        </excludes>
                       </webResource>
                     </webResources>
                     <overlays>
@@ -92,13 +123,51 @@
                     </overlays>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <configuration>
+                    <inplace>true</inplace>
+                    <logLevel>INFO</logLevel>
+                    <runTarget>app.html</runTarget>
+                    <extraJvmArgs>-Xmx1024m -XX:+UseParallelGC -server</extraJvmArgs>
+                    <localWorkers>2</localWorkers>
+                    <soyc>false</soyc>
+                    <style>PRETTY</style>
+                    <warSourceDirectory>${project.build.directory}/gwt-compiled</warSourceDirectory>
+                    <webappDirectory>${project.build.directory}/gwt-compiled</webappDirectory>
+                </configuration>
+                <dependencies>
+                  <!-- Explicitly declare gwt dependencies to ensure the use of the same GWT version. -->
+                  <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-servlet</artifactId>
+                    <version>${gwt.version}</version>
+                  </dependency>
+                  <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-user</artifactId>
+                    <version>${gwt.version}</version>
+                  </dependency>
+                  <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-dev</artifactId>
+                    <version>${gwt.version}</version>
+                  </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                      <id>gwt-clean-compile</id>
+                      <phase>compile</phase>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
       </pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-dependency-plugin</artifactId>
-        </plugin>
-      </plugins>
     </build>
 
 </project>
