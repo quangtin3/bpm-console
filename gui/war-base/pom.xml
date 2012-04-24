@@ -320,7 +320,7 @@
                     <extraJvmArgs>-Xmx1024m -XX:+UseParallelGC -server</extraJvmArgs>
                     <localWorkers>2</localWorkers>
                     <soyc>false</soyc>
-                    <style>OBF</style>
+                    <style>PRETTY</style>
                     <warSourceDirectory>${project.build.directory}/gwt-compiled</warSourceDirectory>
                     <webappDirectory>${project.build.directory}/gwt-compiled</webappDirectory>
                 </configuration>
