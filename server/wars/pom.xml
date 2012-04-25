@@ -32,6 +32,8 @@
   </dependencies>
   
   <build>
+    <finalName>gwt-console-server</finalName>
+    
     <pluginManagement>
       <plugins>
         <plugin>
