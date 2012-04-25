@@ -107,6 +107,13 @@
                         <directory>${project.build.directory}/filtered-templates</directory>
                       </webResource>
                       <webResource>
+                        <directory>src/main/resources</directory>
+                      </webResource>
+                      <webResource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>app</targetPath>
+                      </webResource>
+                      <webResource>
                         <directory>${project.build.directory}/gwt-compiled</directory>
                         <excludes>
                             <exclude>app/.junit_symbolMaps/*.symbolMap</exclude>
