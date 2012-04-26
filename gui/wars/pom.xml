@@ -47,6 +47,17 @@
     <!-- Plugins -->
     <build>
       <sourceDirectory>${project.build.directory}/generated-sources/unpacked-gwt-sources</sourceDirectory>
+      <resources>
+        <resource>
+          <directory>${project.build.sourceDirectory}</directory>
+          <includes>
+            <include>*.properties</include>
+            <include>*.json</include>
+            <include>*.xml</include>
+          </includes>
+          <filtering>false</filtering>
+        </resource>
+      </resources>
       <pluginManagement>
         <plugins>
             <plugin>
