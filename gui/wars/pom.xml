@@ -101,17 +101,11 @@
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
+                  <packagingExcludes>WEB-INF/classes/toolset-profile.properties</packagingExcludes>
                   <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
                     <webResources>
                       <webResource>
                         <directory>${project.build.directory}/filtered-templates</directory>
-                      </webResource>
-                      <webResource>
-                        <directory>src/main/resources</directory>
-                      </webResource>
-                      <webResource>
-                        <directory>src/main/resources</directory>
-                        <targetPath>app</targetPath>
                       </webResource>
                       <webResource>
                         <directory>${project.build.directory}/gwt-compiled</directory>
