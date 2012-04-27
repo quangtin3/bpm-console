@@ -11,13 +11,16 @@
         <groupId>org.jboss.bpm</groupId>
         <artifactId>gwt-console-gui</artifactId>
         <version>2.3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     
     <modules>
       <module>jbpm</module>
       <module>riftsaw</module>
     </modules>
+    
+    <properties>
+      <mergedWarSourceDirectory>${project.build.directory}/merged-webapp</mergedWarSourceDirectory>
+    </properties>
     
     <dependencies>
       <dependency>
@@ -110,6 +113,28 @@
                     <outputDirectory>${project.build.directory}/filtered-templates</outputDirectory>
                   </configuration>
                 </execution>
+                <execution>
+                  <id>merge-webapp-with-resources</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                    <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                    <resources>
+                      <resource>
+                        <directory>src/main/webapp</directory>
+                      </resource>
+                      <resource>
+                        <directory>src/main/resources</directory>
+                      </resource>
+                      <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>app</targetPath>
+                      </resource>
+                    </resources>
+                    <outputDirectory>${mergedWarSourceDirectory}</outputDirectory>
+                  </configuration>
+                </execution>
               </executions>
             </plugin>
             <plugin>
@@ -117,17 +142,10 @@
                 <configuration>
                   <packagingExcludes>WEB-INF/classes/toolset-profile.properties</packagingExcludes>
                   <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
+                  <warSourceDirectory>${mergedWarSourceDirectory}</warSourceDirectory>
                     <webResources>
                       <webResource>
                         <directory>${project.build.directory}/filtered-templates</directory>
-                      </webResource>
-                      <webResource>
-                        <directory>${project.build.directory}/gwt-compiled</directory>
-                        <excludes>
-                            <exclude>app/.junit_symbolMaps/*.symbolMap</exclude>
-                            <exclude>app/junit.html</exclude>
-                            <exclude>app/junit-standards.html</exclude>
-                        </excludes>
                       </webResource>
                     </webResources>
                     <overlays>
@@ -149,8 +167,7 @@
                     <localWorkers>2</localWorkers>
                     <soyc>false</soyc>
                     <style>PRETTY</style>
-                    <warSourceDirectory>${project.build.directory}/gwt-compiled</warSourceDirectory>
-                    <webappDirectory>${project.build.directory}/gwt-compiled</webappDirectory>
+                    <warSourceDirectory>${mergedWarSourceDirectory}</warSourceDirectory>
                 </configuration>
                 <dependencies>
                   <!-- Explicitly declare gwt dependencies to ensure the use of the same GWT version. -->
