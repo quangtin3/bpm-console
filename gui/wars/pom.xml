@@ -152,8 +152,7 @@
                     <warSourceDirectory>${project.build.directory}/gwt-compiled</warSourceDirectory>
                     <webappDirectory>${project.build.directory}/gwt-compiled</webappDirectory>
                 </configuration>
-                <dependencies>
-                  <!-- Explicitly declare gwt dependencies to ensure the use of the same GWT version. -->
+                <!-- <dependencies>
                   <dependency>
                     <groupId>com.google.gwt</groupId>
                     <artifactId>gwt-servlet</artifactId>
@@ -169,7 +168,7 @@
                     <artifactId>gwt-dev</artifactId>
                     <version>${gwt.version}</version>
                   </dependency>
-                </dependencies>
+                </dependencies> -->
                 <executions>
                     <execution>
                       <id>gwt-clean-compile</id>
