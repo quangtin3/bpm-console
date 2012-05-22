@@ -23,6 +23,7 @@ package org.jboss.bpm.console.client.process;
 
 import java.util.List;
 
+import org.gwt.mosaic.ui.client.MessageBox;
 import org.jboss.bpm.console.client.URLBuilder;
 import org.jboss.bpm.console.client.common.AbstractRESTAction;
 import org.jboss.bpm.console.client.model.ActiveNodeInfo;
@@ -61,11 +62,14 @@ public class LoadActivityDiagramAction extends AbstractRESTAction
       final Controller controller, final Object event, Response response)
   {
     ProcessInstanceRef inst = (ProcessInstanceRef)event;
-
-    List<ActiveNodeInfo> activeNodeInfos = DTOParser.parseActiveNodeInfo(response.getText());
-    // update view
-    ActivityDiagramView view = (ActivityDiagramView) controller.getView(ActivityDiagramView.ID);
-    view.update(new ActivityDiagramResultEvent(URLBuilder.getInstance().getProcessImageURL(inst.getDefinitionId()), activeNodeInfos));
+    if (inst.getState().equals(ProcessInstanceRef.STATE.ENDED) || response.getText().length() == 0) {
+    	MessageBox.alert("Info", "Process is already completed");
+    } else {
+    	List<ActiveNodeInfo> activeNodeInfos = DTOParser.parseActiveNodeInfo(response.getText());
+	    // update view
+	    ActivityDiagramView view = (ActivityDiagramView) controller.getView(ActivityDiagramView.ID);
+	    view.update(new ActivityDiagramResultEvent(URLBuilder.getInstance().getProcessImageURL(inst.getDefinitionId()), activeNodeInfos));
+    }
     }
   
 }

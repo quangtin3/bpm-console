@@ -295,15 +295,20 @@ public class InstanceListView implements WidgetProvider, ViewInterface, DataDriv
                                     {
                                         if (doIt)
                                         {
-                                            ProcessInstanceRef selection = getSelection();
-                                            selection.setState(ProcessInstanceRef.STATE.ENDED);
-                                            selection.setEndResult(ProcessInstanceRef.RESULT.OBSOLETE);
-                                            controller.handleEvent(
-                                                    new Event(
-                                                            StateChangeAction.ID,
-                                                            selection
-                                                    )
-                                            );
+                                        	ProcessInstanceRef selection = getSelection();
+                                        	if (selection.getState().equals(ProcessInstanceRef.STATE.ENDED)) {
+                                            	MessageBox.alert("Info", "Process is already completed");
+                                            } else {
+	                                            
+	                                            selection.setState(ProcessInstanceRef.STATE.ENDED);
+	                                            selection.setEndResult(ProcessInstanceRef.RESULT.OBSOLETE);
+	                                            controller.handleEvent(
+	                                                    new Event(
+	                                                            StateChangeAction.ID,
+	                                                            selection
+	                                                    )
+	                                            );
+                                            }
                                         }
                                     }
                                 });
@@ -334,14 +339,18 @@ public class InstanceListView implements WidgetProvider, ViewInterface, DataDriv
                                         {
                                         	try {
 	                                            ProcessInstanceRef selection = getSelection();
-	                                            selection.setState(ProcessInstanceRef.STATE.ENDED);
-	
-	                                            controller.handleEvent(
-	                                                    new Event(
-	                                                            DeleteInstanceAction.ID,
-	                                                            selection
-	                                                    )
-	                                            );
+	                                            if (selection.getState().equals(ProcessInstanceRef.STATE.ENDED)) {
+	                                            	MessageBox.alert("Info", "Process is already completed");
+	                                            } else {
+		                                            selection.setState(ProcessInstanceRef.STATE.ENDED);
+		
+		                                            controller.handleEvent(
+		                                                    new Event(
+		                                                            DeleteInstanceAction.ID,
+		                                                            selection
+		                                                    )
+		                                            );
+	                                            }
                                         	} catch (Exception e) {
 												MessageBox.alert("Warning", e.getMessage());
 											}
