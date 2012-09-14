@@ -27,10 +27,12 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
 import com.mvc4g.client.Controller;
+import com.mvc4g.client.Event;
 
 import org.gwt.mosaic.ui.client.MessageBox;
 import org.jboss.bpm.console.client.URLBuilder;
 import org.jboss.bpm.console.client.common.AbstractRESTAction;
+import org.jboss.bpm.console.client.model.ProcessDefinitionRef;
 import org.jboss.bpm.console.client.util.ConsoleLog;
 
 /**
@@ -59,6 +61,9 @@ public class UpdateInstanceDataAction extends AbstractRESTAction
 
   public void handleSuccessfulResponse(final Controller controller, final Object event, Response response)
   {
+	InstanceDetailView viewData = (InstanceDetailView)controller.getView(InstanceDetailView.ID);
+	viewData.createDataWindow();
+		
     String id = (String)event;
     String xml = response.getText();
     Document messageDom = XMLParser.parse(xml);
@@ -76,4 +81,13 @@ public class UpdateInstanceDataAction extends AbstractRESTAction
 	MessageBox.alert("Status information", message);
   }
   
+	@Override
+	protected void handlePostError(Controller controller, Object event) {
+
+		InstanceListView view = (InstanceListView) controller.getView(InstanceListView.ID);
+	    ProcessDefinitionRef def = view.getCurrentDefinition();
+
+	    // force reload instance list
+	    controller.handleEvent( new Event(UpdateInstancesAction.ID, def));
+	}
 }

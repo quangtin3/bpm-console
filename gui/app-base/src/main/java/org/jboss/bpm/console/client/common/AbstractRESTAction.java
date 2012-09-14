@@ -92,6 +92,7 @@ public abstract class AbstractRESTAction implements ActionInterface
                       url,
                       new RequestException("HTTP "+ response.getStatusCode()+ ": " + msg)
                   );
+                  handlePostError(controller, object);
                 }
               }
               finally
@@ -156,5 +157,9 @@ public abstract class AbstractRESTAction implements ActionInterface
     ConsoleLog.error(out, t);
     appContext.displayMessage(out, true);
 
+  }
+  
+  protected void handlePostError(final Controller controller, final Object event ) {
+	  
   }
 }

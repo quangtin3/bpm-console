@@ -158,10 +158,20 @@ public class InstanceDetailView extends CaptionLayoutPanel implements ViewInterf
         	              ProcessInstanceRef selection = getCurrentInstance();
         	              if(selection!=null)
         	              {
-        	                createDiagramWindow(selection);
-        	                controller.handleEvent(
-        	                    new Event(LoadActivityDiagramAction.ID, selection)
-        	                );
+        	            	  if (selection.getState().equals(ProcessInstanceRef.STATE.ENDED)) {
+                          		MessageBox.alert("Info", "Process is already completed");
+                          		controller.handleEvent(
+                                          new Event(
+                                                  UpdateInstancesAction.ID,
+                                                  currentDefintion
+                                          )
+                                  );
+                          	} else {
+//	        	                createDiagramWindow(selection);
+	        	                controller.handleEvent(
+	        	                    new Event(LoadActivityDiagramAction.ID, selection)
+	        	                );
+        	                }
         	              }
         	            }
         	            else
@@ -182,10 +192,11 @@ public class InstanceDetailView extends CaptionLayoutPanel implements ViewInterf
                     {
                         if(currentInstance!=null)
                         {
-                            createDataWindow(currentInstance);
+//                            createDataWindow(currentInstance);
                             controller.handleEvent(
                                     new Event(UpdateInstanceDataAction.ID, currentInstance.getId())
                             );
+                    
                         }
                     }
                 }
@@ -200,6 +211,10 @@ public class InstanceDetailView extends CaptionLayoutPanel implements ViewInterf
 
     }
 
+    public void createDiagramWindow() {
+    	createDiagramWindow(getCurrentInstance());
+    }
+    
     private void createDiagramWindow(ProcessInstanceRef inst)
     {
         if(isRiftsawInstance) {
@@ -289,6 +304,10 @@ public class InstanceDetailView extends CaptionLayoutPanel implements ViewInterf
     	return sbuffer.toString();
     }
 
+    public void createDataWindow() {
+    	createDataWindow(getCurrentInstance());
+    }
+    
     private void createDataWindow(ProcessInstanceRef inst)
     {
     	instanceDataView.clear();
@@ -357,5 +376,11 @@ public class InstanceDetailView extends CaptionLayoutPanel implements ViewInterf
     private ProcessInstanceRef getCurrentInstance()
     {
         return currentInstance;
+    }
+    
+    public void closeDataInstanceWindow() {
+    	if (instanceDataWindowPanel != null) {
+    		instanceDataWindowPanel.close();
+    	}
     }
 }

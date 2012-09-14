@@ -80,5 +80,17 @@ public class StateChangeAction extends AbstractRESTAction
 	ConsoleLog.warn("Server reported following warning: " + message + " for url " + url);
 	MessageBox.alert("Status information", message);
   }
+
+	@Override
+	protected void handlePostError(Controller controller, Object event) {
+		InstanceListView view = (InstanceListView) controller.getView(InstanceListView.ID);
+	    ProcessDefinitionRef def = view.getCurrentDefinition();
+
+	    // force reload instance list
+	    controller.handleEvent( new Event(UpdateInstancesAction.ID, def));
+	}
+
+  
+  
 }
 
