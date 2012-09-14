@@ -28,12 +28,14 @@ import org.jboss.bpm.console.client.URLBuilder;
 import org.jboss.bpm.console.client.common.AbstractRESTAction;
 import org.jboss.bpm.console.client.model.ActiveNodeInfo;
 import org.jboss.bpm.console.client.model.DTOParser;
+import org.jboss.bpm.console.client.model.ProcessDefinitionRef;
 import org.jboss.bpm.console.client.model.ProcessInstanceRef;
 import org.jboss.bpm.console.client.process.events.ActivityDiagramResultEvent;
 
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
 import com.mvc4g.client.Controller;
+import com.mvc4g.client.Event;
 
 /**
  * @author Heiko.Braun <heiko.braun@jboss.com>
@@ -61,10 +63,21 @@ public class LoadActivityDiagramAction extends AbstractRESTAction
   public void handleSuccessfulResponse(
       final Controller controller, final Object event, Response response)
   {
+
+	  
     ProcessInstanceRef inst = (ProcessInstanceRef)event;
     if (inst.getState().equals(ProcessInstanceRef.STATE.ENDED) || response.getText().length() == 0) {
     	MessageBox.alert("Info", "Process is already completed");
+    	
+    	InstanceListView view = (InstanceListView) controller.getView(InstanceListView.ID);
+	    ProcessDefinitionRef def = view.getCurrentDefinition();
+
+	    // force reload instance list
+	    controller.handleEvent( new Event(UpdateInstancesAction.ID, def));
     } else {
+  	  	InstanceDetailView viewData = (InstanceDetailView)controller.getView(InstanceDetailView.ID);
+  		viewData.createDiagramWindow();
+  		
     	List<ActiveNodeInfo> activeNodeInfos = DTOParser.parseActiveNodeInfo(response.getText());
 	    // update view
 	    ActivityDiagramView view = (ActivityDiagramView) controller.getView(ActivityDiagramView.ID);
