@@ -79,7 +79,7 @@
         <junit.version>3.8.1</junit.version>
         <mvc4g.version>1.0.0-jboss</mvc4g.version>
         <!--mosaic.version>0.4.0-rc4</mosaic.version-->
-        <resteasy.version>2.2.1.GA</resteasy.version>
+        <resteasy.version>2.2.3.GA</resteasy.version>
         <stax-api.version>1.0-2</stax-api.version>
         <report.server.version>1.4.2.Final</report.server.version>
 
