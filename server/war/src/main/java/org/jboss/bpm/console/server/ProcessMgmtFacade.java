@@ -271,7 +271,40 @@ public class ProcessMgmtFacade
     getProcessManagement().deleteInstance(executionId);
     return Response.ok().type("application/json").build();
   }
-
+  
+  @GET
+  @Path("instances/delete")
+  @Produces("application/json")
+  @RsComment(project={ProjectName.RIFTSAW})
+  public Response removeOldInstances(@QueryParam("status") String status,
+		  							 @QueryParam("started") String started,
+		  							 @QueryParam("last-active") String lastActive) {
+	  StringBuilder sbuilder = new StringBuilder();
+	  if (isNotNull(status)) {
+		  sbuilder.append("status=").append(status).append(" ");
+	  }
+	  if (isNotNull(started)) {
+		  sbuilder.append("started").append(started).append(" ");
+	  }
+	  if (isNotNull(lastActive)) {
+		  sbuilder.append("last-active").append(lastActive).append(" ");
+	  }
+	  long result = 0;
+	  if (isNotNull(sbuilder.toString())) {
+		  try {
+			result = getProcessManagement().deleteInstances(sbuilder.toString());
+		} catch (Exception e) {
+			return createJsonResponse("Error! " + e.getMessage());
+		}
+	  }
+	  
+	  return createJsonResponse(result + " process instances have been removed successfully.");
+  }
+  
+  private boolean isNotNull(String val) {
+	  return (val != null && !"".equals(val.trim()));
+  }
+  
   @POST
   @Path("tokens/{id}/transition")
   @Produces("application/json")

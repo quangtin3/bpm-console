@@ -59,4 +59,6 @@ public interface ProcessManagement
 
   void signalExecution(String executionId, String signal);
   
+  long deleteInstances(String filter);
+  
 }
