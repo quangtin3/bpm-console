@@ -37,6 +37,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
@@ -71,6 +73,28 @@ public class InfoFacade
   {
     ServerStatus status = getServerStatus();
     return createJsonResponse(status);
+  }
+  
+  @GET
+  @Path("RiftSawStatus")
+  @Produces("application/json")
+  @RsComment(
+      title = "Plugins",
+      description = "Plugin availability"
+  )
+  public Response getRiftSawServerInfo()
+  {
+	boolean result = true;
+    try
+    {
+      InitialContext ctx = new InitialContext();
+      ctx.lookup("java:jboss/BPELEngine");
+    }
+    catch (NamingException e)
+    {
+      result = false;
+    }
+    return createJsonResponse(result);
   }
 
   private ServerStatus getServerStatus()
