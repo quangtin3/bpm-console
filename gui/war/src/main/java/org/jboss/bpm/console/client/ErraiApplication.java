@@ -152,11 +152,12 @@ public class ErraiApplication implements EntryPoint, SubscribeListener
         mainController.addAction(BootstrapAction.ID, new BootstrapAction());
         mainController.addView("loginView", new LoginView());
 
-        // bootstrap and login
-        mainController.handleEvent(
+        // bootstrap
+/*        mainController.handleEvent(
                 new com.mvc4g.client.Event(BootstrapAction.ID, Boolean.TRUE)
-        );
-
+        );*/
+        
+        //login
         mainController.handleEvent(new Event("login", null));
     }
 

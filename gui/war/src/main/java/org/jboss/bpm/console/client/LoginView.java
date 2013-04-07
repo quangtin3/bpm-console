@@ -202,8 +202,13 @@ public class LoginView implements ViewInterface
                                 {
                                     usernameInput.setText("");
                                     passwordInput.setText("");
-                                    messagePanel.setHTML("<div style='color:#CC0000;'>Authentication failed. Please try again:</div>");
-                                }
+                                    if (t.getMessage().indexOf("BPEL Engine") != -1) {
+                                    	messagePanel.setHTML("<div style='color:#CC0000;'>BPEL Engine is not started.");
+                                    } else {
+                                    	messagePanel.setHTML("<div style='color:#CC0000;'>Authentication failed. Please try again:</div>");
+                                    }
+                                 }
+                                    
                             }
                     );
 

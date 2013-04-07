@@ -28,9 +28,13 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.mvc4g.client.Controller;
+import com.mvc4g.client.Event;
+
 import org.gwt.mosaic.ui.client.MessageBox;
 import org.jboss.bpm.console.client.util.ConsoleLog;
 import org.jboss.bpm.console.client.util.JSONWalk;
+import org.jboss.errai.workspaces.client.framework.Registry;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,7 +101,12 @@ public class Authentication
 
                       public void execute()
                       {
-                        requestAssignedRoles();
+                    	if (config.getProfileName().equalsIgnoreCase("BPEL Console")) {
+                    		checkBPELEngineAndRequestAssignedRoles();
+                    	} else {
+                    		requestAssignedRoles();
+                    		loadBootstrapAction();
+                    	}
                       }
                     }
                 );
@@ -119,11 +128,47 @@ public class Authentication
       ConsoleLog.error("Request error", e);
     }
   }
+  
+  private void loadBootstrapAction() {
+	  Registry.get(Controller.class).handleEvent(new Event(BootstrapAction.ID, Boolean.TRUE));
+  }
 
   public Date getLoggedInSince()
   {
     return loggedInSince;
   }
+  
+  private void checkBPELEngineAndRequestAssignedRoles() {
+	  RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, URLBuilder.getInstance().getRiftSawServerStatusURL());
+	  try {
+		rb.sendRequest(null, new RequestCallback(){
+
+			public void onError(Request request, Throwable t) {
+				 if (callback != null) {
+		            callback.onLoginFailed(request, t);
+				 } else {
+		            throw new RuntimeException("Unknown exception upon login attempt", t);
+				 }
+			}
+
+			public void onResponseReceived(Request request, Response response) {
+				if (response.getText().equalsIgnoreCase("false")) {
+					if (callback != null) {
+						callback.onLoginFailed(request, new Exception("BPEL Engine is not available."));
+					}
+				} else {
+					requestAssignedRoles();
+					loadBootstrapAction();
+				}
+			}
+			  
+		  });
+	} catch (RequestException e) {
+		throw new RuntimeException("Unknown error upon login attempt", e);
+	}
+	          
+  }
+  
 
   /**
    * Login using specific credentials.

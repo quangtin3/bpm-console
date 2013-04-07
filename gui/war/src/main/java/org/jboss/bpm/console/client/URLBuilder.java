@@ -85,6 +85,11 @@ public class URLBuilder
     {
         return config.getConsoleServerUrl() + "/rs/server/status";
     }
+    
+    public String getRiftSawServerStatusURL()
+    {
+        return config.getConsoleServerUrl() + "/rs/server/bpelstatus";
+    }
 
     @Deprecated
     public String getRemoveDefinitionURL(String processId)

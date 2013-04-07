@@ -76,26 +76,31 @@ public class InfoFacade
   }
   
   @GET
-  @Path("RiftSawStatus")
+  @Path("bpelstatus")
   @Produces("application/json")
   @RsComment(
-      title = "Plugins",
-      description = "Plugin availability"
+      title = "BpelStatus",
+      description = "BPEL Engine Availability"
   )
   public Response getRiftSawServerInfo()
   {
-	boolean result = true;
-    try
-    {
-      InitialContext ctx = new InitialContext();
-      ctx.lookup("java:jboss/BPELEngine");
-    }
-    catch (NamingException e)
-    {
-      result = false;
-    }
+	boolean result = isBPELEngineStarted();
     return createJsonResponse(result);
   }
+
+	private boolean isBPELEngineStarted() {
+		boolean result = true;
+	    try
+	    {
+	      InitialContext ctx = new InitialContext();
+	      ctx.lookup("java:jboss/BPELEngine");
+	    }
+	    catch (NamingException e)
+	    {
+	      result = false;
+	    }
+		return result;
+	}
 
   private ServerStatus getServerStatus()
   {
