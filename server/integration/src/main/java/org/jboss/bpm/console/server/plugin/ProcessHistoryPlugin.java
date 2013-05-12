@@ -35,6 +35,8 @@ public interface ProcessHistoryPlugin {
     String getCompletedInstances4Chart(String definitionId, String timespan);
 
     String getFailedInstances4Chart(String definitionId, String timespan);
+    
+    boolean recoveryAction(String iid, String aid, String action);
 
 	
 }

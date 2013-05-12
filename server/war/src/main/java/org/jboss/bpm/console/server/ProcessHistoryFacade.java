@@ -212,6 +212,17 @@ public class ProcessHistoryFacade {
         String result = getProcessHistoryPlugin().getFailedInstances4Chart(definitionId, timespan);
         return Response.ok(result).type("application/json").build();
     }
+    
+    @GET
+    @Produces("application/json")
+    @Path("instance/recovery/{iid}/{aid}/{action}")
+    public Response recoveryAction(@PathParam("iid") String iid,
+    							   @PathParam("aid") String aid,
+    							   @PathParam("action") String action) {
+    	checkNotNull("action", action);
+    	getProcessHistoryPlugin().recoveryAction(iid, aid, action);
+    	return Response.ok().type("application/json").build();
+    }
 
 
 	private Response createJsonResponse(Object wrapper) {
