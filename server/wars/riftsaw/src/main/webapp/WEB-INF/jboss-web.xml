@@ -6,7 +6,7 @@
 
 <jboss-web>
 
-  <security-domain>java:/jaas/bpel-console</security-domain>
+  <security-domain>java:/jaas/other</security-domain>
 
   <context-root>bpel-console-server</context-root>
 
