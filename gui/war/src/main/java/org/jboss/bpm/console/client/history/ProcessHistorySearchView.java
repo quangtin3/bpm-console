@@ -71,6 +71,7 @@ public class ProcessHistorySearchView implements WidgetProvider, ViewInterface {
 	public void initialize(final List<ProcessDefinitionRef> processDefinitions) {
 
 		final LayoutPanel panel = new LayoutPanel(new BoxLayout(BoxLayout.Orientation.VERTICAL));
+	    panel.getElement().setId("process-history-search-view");
 		panel.setPadding(0);
 		panel.setWidgetSpacing(5);
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ JBoss, Home of Professional Open Source
+  ~ Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+  ~ as indicated by the @author tags. All rights reserved.
+  ~ See the copyright.txt in the distribution for a
+  ~ full listing of individual contributors.
+  ~ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+  ~ You should have received a copy of the GNU Lesser General Public License,
+  ~ v.2.1 along with this distribution; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  ~ MA  02110-1301, USA.
+  -->
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.0">
+<deployment>
+     <dependencies>
+          <module name="org.slf4j" />
+          <module name="org.picketbox" />
+          <module name="org.picketlink" />
+          <module name="org.overlord.commons.overlord-commons-auth" />
+          <module name="org.jboss.as.web" />
+          <module name="org.jboss.resteasy.resteasy-jaxrs" />
+          <module name="org.jboss.resteasy.resteasy-jaxb-provider" />
+          <module name="org.jboss.resteasy.resteasy-multipart-provider" />
+          <module name="org.switchyard.component.bpel" services="import"/>
+     </dependencies>
+ </deployment>
+</jboss-deployment-structure>

@@ -21,15 +21,8 @@
  */
 package org.jboss.bpm.console.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.*;
-import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.*;
-import com.mvc4g.client.Controller;
-import com.mvc4g.client.ViewInterface;
+import java.util.List;
+
 import org.gwt.mosaic.ui.client.Caption;
 import org.gwt.mosaic.ui.client.MessageBox;
 import org.gwt.mosaic.ui.client.WindowPanel;
@@ -43,7 +36,30 @@ import org.jboss.errai.bus.client.protocols.SecurityParts;
 import org.jboss.errai.bus.client.security.SecurityService;
 import org.jboss.errai.workspaces.client.framework.Registry;
 
-import java.util.List;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+import com.mvc4g.client.Controller;
+import com.mvc4g.client.ViewInterface;
 
 /**
  * @author Heiko.Braun <heiko.braun@jboss.com>
@@ -141,7 +157,6 @@ public class LoginView implements ViewInterface
 
                                                                 public void onSuccess()
                                                                 {
-
                                                                     List<String> roles = auth.getRolesAssigned();
                                                                     StringBuilder roleString = new StringBuilder();
                                                                     int index = 1;
@@ -181,6 +196,10 @@ public class LoginView implements ViewInterface
                                                                                         {
                                                                                             DOM.getElementById("ui_loading").getStyle().setProperty("visibility", "hidden");
                                                                                             DOM.getElementById("splash").getStyle().setProperty("visibility", "hidden");
+                                                                                            
+                                                                                            if (!config.requiresLogin()) {
+                                                                                                DOM.getElementById("logout-button").getStyle().setDisplay(Display.BLOCK);
+                                                                                            }
                                                                                         }
                                                                                     });
 
@@ -220,7 +239,44 @@ public class LoginView implements ViewInterface
 
                     // focus
                     usernameInput.setFocus(true);
+                    
+                    if (!config.requiresLogin()) {
+                        DOM.getElementById("splash").getStyle().setProperty("zIndex", "1000");
+                        DOM.getElementById("ui_loading").getStyle().setProperty("visibility", "visible");
+                        Timer t = new Timer() {
+                            public void run()
+                            {
+                                // Login isn't required, so instead ping the server to get the currently
+                                // authenticated JAAS user.  Then pass that to "login" so that the rest of
+                                // the login chain can be performed.
+                                RequestBuilder rb = new RequestBuilder(
+                                        RequestBuilder.GET,
+                                        config.getConsoleServerUrl()+"/rs/identity/user/current"
+                                );
 
+                                try
+                                {
+                                    rb.sendRequest(null, new RequestCallback()
+                                    {
+                                        public void onResponseReceived(Request request, Response response)
+                                        {
+                                            String user = response.getText();
+                                            if (user != null && user.startsWith("\"")) {
+                                                user = user.substring(1, user.length()-1);
+                                            }
+                                            auth.login(user, null);
+                                        }
+                                        public void onError(Request request, Throwable e) {
+                                            ConsoleLog.error("Request error", e);
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    ConsoleLog.error("Request error", e);
+                                }
+                            }
+                        };
+                        t.schedule(1000);
+                    }
                 }
 
                 public void onError(Request request, Throwable t)
@@ -251,6 +307,10 @@ public class LoginView implements ViewInterface
 
         createLayoutContent(panel);
         window.setWidget(panel);
+        
+        if (!config.requiresLogin()) {
+            window.setVisible(false);
+        }
     }
 
     /**

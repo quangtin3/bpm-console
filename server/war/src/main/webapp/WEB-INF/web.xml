@@ -65,17 +65,9 @@
     </auth-constraint>
   </security-constraint>
 
-  <!--login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>GWT Console Server</realm-name>
-  </login-config-->
-
   <login-config>
-    <auth-method>FORM</auth-method>
-    <form-login-config>
-      <form-login-page>/login.html</form-login-page>
-      <form-error-page>/login_failed.html</form-error-page>
-    </form-login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>OverlordRealm</realm-name>
   </login-config>
 
   <security-role>

@@ -6,14 +6,10 @@
 
 <jboss-web>
 
-   <!--security-domain>java:/jaas/jbpm-console</security-domain-->
-
-   <context-root>${console.app.webcontext}</context-root>
-
-   <!--resource-ref>
-     <res-ref-name>jdbc/JbpmDataSource</res-ref-name>
-     <jndi-name>java:/JbpmDS</jndi-name>
-   </resource-ref>
-   -->
+  <security-domain>overlord-sp</security-domain>
+  <context-root>${console.app.webcontext}</context-root>
+  <valve>
+    <class-name>org.picketlink.identity.federation.bindings.tomcat.sp.ServiceProviderAuthenticator</class-name>
+  </valve>
 
 </jboss-web>

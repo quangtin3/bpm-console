@@ -71,64 +71,75 @@ public class Authentication
   {
     this.username = user;
     this.password = pass;
+    
+    if (config.requiresLogin()) {
+        String formAction = config.getConsoleServerUrl() + "/rs/identity/secure/j_security_check";
+        RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, formAction);
+        rb.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    String formAction = config.getConsoleServerUrl() + "/rs/identity/secure/j_security_check";
-    RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, formAction);
-    rb.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        try
+        {
+          rb.sendRequest("j_username="+user+"&j_password="+pass,
+              new RequestCallback()
+              {
+    
+                public void onResponseReceived(Request request, Response response)
+                {
+                  ConsoleLog.debug("postLoginCredentials() HTTP "+response.getStatusCode());
+    
+                  if(response.getText().indexOf("HTTP 401")!=-1) // HACK
+                  {
+                    if (callback != null)
+                      callback.onLoginFailed(request, new Exception("Authentication failed"));
+                    else
+                      throw new RuntimeException("Unknown exception upon login attempt");
+                  }
+                  else if(response.getStatusCode()==200) // it's always 200, even when the authentication fails
+                  {
+                    doOnLoginSuccess();
+                  }
+                }
+    
+                public void onError(Request request, Throwable t)
+                {
+                  if (callback != null)
+                    callback.onLoginFailed(request, new Exception("Authentication failed"));
+                  else
+                    throw new RuntimeException("Unknown exception upon login attempt");
+                }
+              }
+          );
+        }
+        catch (RequestException e)
+        {
+          ConsoleLog.error("Request error", e);
+        }
+    } else {
+        doOnLoginSuccess();
+    }
+  }
 
-    try
-    {
-      rb.sendRequest("j_username="+user+"&j_password="+pass,
-          new RequestCallback()
+  /**
+   * Called after login is successful.
+   */
+  private void doOnLoginSuccess() {
+      DeferredCommand.addCommand(
+          new Command()
           {
 
-            public void onResponseReceived(Request request, Response response)
+            public void execute()
             {
-              ConsoleLog.debug("postLoginCredentials() HTTP "+response.getStatusCode());
-
-              if(response.getText().indexOf("HTTP 401")!=-1) // HACK
-              {
-                if (callback != null)
-                  callback.onLoginFailed(request, new Exception("Authentication failed"));
-                else
-                  throw new RuntimeException("Unknown exception upon login attempt");
+              if (config.getProfileName().equalsIgnoreCase("BPEL Console")) {
+                  checkBPELEngineAndRequestAssignedRoles();
+              } else {
+                  requestAssignedRoles();
+                  loadBootstrapAction();
               }
-              else if(response.getStatusCode()==200) // it's always 200, even when the authentication fails
-              {
-                DeferredCommand.addCommand(
-                    new Command()
-                    {
-
-                      public void execute()
-                      {
-                    	if (config.getProfileName().equalsIgnoreCase("BPEL Console")) {
-                    		checkBPELEngineAndRequestAssignedRoles();
-                    	} else {
-                    		requestAssignedRoles();
-                    		loadBootstrapAction();
-                    	}
-                      }
-                    }
-                );
-              }
-            }
-
-            public void onError(Request request, Throwable t)
-            {
-              if (callback != null)
-                callback.onLoginFailed(request, new Exception("Authentication failed"));
-              else
-                throw new RuntimeException("Unknown exception upon login attempt");
             }
           }
       );
-    }
-    catch (RequestException e)
-    {
-      ConsoleLog.error("Request error", e);
-    }
   }
-  
+
   private void loadBootstrapAction() {
 	  Registry.get(Controller.class).handleEvent(new Event(BootstrapAction.ID, Boolean.TRUE));
   }

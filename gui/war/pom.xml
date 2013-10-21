@@ -243,6 +243,18 @@
         <!-- 3rd party -->
 
         <dependency>
+          <groupId>org.overlord</groupId>
+          <artifactId>overlord-commons-auth</artifactId>
+          <version>1.0.9</version>
+          <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <scope>provided</scope>

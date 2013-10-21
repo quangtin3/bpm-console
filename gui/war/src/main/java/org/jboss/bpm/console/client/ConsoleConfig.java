@@ -51,6 +51,7 @@ public class ConsoleConfig
   private String consoleServerUrl;
 
   private String defaultEditor;
+  private boolean requiresLogin;
   
   public ConsoleConfig(String proxyUrl)
   {
@@ -59,6 +60,7 @@ public class ConsoleConfig
     logo = theme.get("logo");
 
     serverWebContext = theme.get("serverWebContext");
+    requiresLogin = !"false".equals(theme.get("requiresLogin"));
 
     overallReportFile = theme.get("overallReportFile");
     processSummaryReportFile = theme.get("processSummaryReportFile");
@@ -84,6 +86,10 @@ public class ConsoleConfig
 
     // features
 
+  }
+  
+  public boolean requiresLogin() {
+      return requiresLogin;
   }
 
   public String getHost()

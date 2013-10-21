@@ -22,6 +22,7 @@
 package org.jboss.bpm.console.server;
 
 import com.google.gson.Gson;
+
 import org.jboss.bpm.console.client.model.RoleAssignmentRef;
 import org.jboss.bpm.console.client.model.RoleAssignmentRefWrapper;
 import org.jboss.bpm.console.server.gson.GsonFactory;
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import java.security.Principal;
 import java.util.*;
 
 /**
@@ -99,6 +102,22 @@ public class UserMgmtFacade
   )
   {
     return Response.ok(request.getSession().getId()).build();
+  }
+
+  @GET
+  @Path("user/current")
+  @Produces("application/json")
+  public Response getCurrentUser(@Context HttpServletRequest request)
+  {
+      String user = null;
+      Principal principal = request.getUserPrincipal();
+      if (principal != null) {
+          user = principal.getName();
+      }
+      if (user == null) {
+          user = request.getRemoteUser();
+      }
+      return createJsonResponse(user);
   }
 
   @GET

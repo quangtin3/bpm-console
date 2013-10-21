@@ -1,10 +1,40 @@
 <!DOCTYPE web-app PUBLIC
         "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
-
 <web-app>
     <display-name>BPM Console UI</display-name>
 
+    <error-page>
+        <error-code>403</error-code>
+        <location>/403.html</location>
+    </error-page>
+    
+    <servlet>
+        <servlet-name>RestProxy</servlet-name>
+        <servlet-class>org.jboss.bpm.console.server.RestProxyServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <init-param>
+            <param-name>proxy-url</param-name>
+            <param-value>SCHEME://HOST:PORT/bpel-console-server/rs/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authentication-provider</param-name>
+            <param-value>org.jboss.bpm.console.server.RestProxySAMLBearerTokenAuthProvider</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authentication.saml.issuer</param-name>
+            <param-value>/bpel-console</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authentication.saml.service</param-name>
+            <param-value>/bpel-console-server</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RestProxy</servlet-name>
+        <url-pattern>/rs/*</url-pattern>
+    </servlet-mapping>
+    
     @comment.left@
     <servlet>
         <servlet-name>xmlProxy</servlet-name>
@@ -46,5 +76,34 @@
         <url-pattern>/app/proxy/*</url-pattern>
     </servlet-mapping>
     @comment.right@
+
+  <!-- Define a Security Constraint on this Application -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>BPEL Console</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>overlorduser</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <!-- Define the Login Configuration for this Application -->
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>Overlord</realm-name>
+    <form-login-config>
+      <form-login-page>/login.html</form-login-page>
+      <form-error-page>/loginerror.html</form-error-page>
+    </form-login-config>
+  </login-config>
+
+  <!-- Security roles referenced by this web application -->
+  <security-role>
+    <description>
+        The role that is required to log in to the BPEL Console.
+    </description>
+    <role-name>overlorduser</role-name>
+  </security-role>
 
 </web-app>

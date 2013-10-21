@@ -95,6 +95,7 @@ public class DeploymentListView implements ViewInterface, WidgetProvider, DataDr
   public void provideWidget(ProvisioningCallback callback)
   {
     panel = new MosaicPanel(new BorderLayout());
+    panel.getElement().setId("deployment-list-view");
     listBox = createListBox();
 
     initialize();
