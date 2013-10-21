@@ -51,6 +51,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.KeyboardListener;
@@ -219,12 +220,20 @@ public class LoginView implements ViewInterface
 
                                 public void onLoginFailed(Request request, Throwable t)
                                 {
-                                    usernameInput.setText("");
-                                    passwordInput.setText("");
-                                    if (t.getMessage().indexOf("BPEL Engine") != -1) {
-                                    	messagePanel.setHTML("<div style='color:#CC0000;'>BPEL Engine is not started.");
+                                    if (config.requiresLogin()) {
+                                        usernameInput.setText("");
+                                        passwordInput.setText("");
+                                        if (t.getMessage().indexOf("BPEL Engine") != -1) {
+                                        	messagePanel.setHTML("<div style='color:#CC0000;'>BPEL Engine is not started.");
+                                        } else {
+                                        	messagePanel.setHTML("<div style='color:#CC0000;'>Authentication failed. Please try again:</div>");
+                                        }
                                     } else {
-                                    	messagePanel.setHTML("<div style='color:#CC0000;'>Authentication failed. Please try again:</div>");
+                                        if (t.getMessage().indexOf("BPEL Engine") != -1) {
+                                            Window.alert("The BPEL Engine is not started.  Please start the engine and reload.");
+                                        } else {
+                                            Window.alert("Error Logging In: " + t.getMessage());
+                                        }
                                     }
                                  }
                                     
