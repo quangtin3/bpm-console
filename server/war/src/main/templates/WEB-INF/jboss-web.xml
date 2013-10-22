@@ -7,7 +7,8 @@
 <jboss-web>
 
   <security-domain>${server.jaas.domain}</security-domain>
-
   <context-root>${console.server.webcontext}</context-root>
-
+  <valve>
+    <class-name>org.overlord.commons.auth.jboss7.HttpRequestThreadLocalValve</class-name>
+  </valve>
 </jboss-web>
