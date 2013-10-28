@@ -182,6 +182,10 @@
           <groupId>javax.xml.stream</groupId>
           <artifactId>stax-api</artifactId>
         </exclusion>
+        <exclusion>
+          <artifactId>sjsxp</artifactId>
+          <groupId>com.sun.xml.stream</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
