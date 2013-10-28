@@ -16,6 +16,8 @@
 package org.jboss.bpm.console.server;
 
 import java.net.HttpURLConnection;
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.util.Map;
 
 import org.overlord.commons.auth.jboss7.SAMLBearerTokenUtil;
@@ -25,6 +27,14 @@ import org.overlord.commons.auth.jboss7.SAMLBearerTokenUtil;
  * @author eric.wittmann@redhat.com
  */
 public class RestProxySAMLBearerTokenAuthProvider implements RestProxyAuthProvider {
+
+    public static final String SAML_AUTH_ISSUER = "bpel-console.rest-proxy.authentication.saml.issuer"; //$NON-NLS-1$
+    public static final String SAML_AUTH_SERVICE = "bpel-console.rest-proxy.authentication.saml.service"; //$NON-NLS-1$
+    public static final String SAML_AUTH_SIGN_ASSERTIONS = "bpel-console.rest-proxy.authentication.saml.sign-assertions"; //$NON-NLS-1$
+    public static final String SAML_AUTH_KEYSTORE = "bpel-console.rest-proxy.authentication.saml.keystore"; //$NON-NLS-1$
+    public static final String SAML_AUTH_KEYSTORE_PASSWORD = "bpel-console.rest-proxy.authentication.saml.keystore-password"; //$NON-NLS-1$
+    public static final String SAML_AUTH_KEY_ALIAS = "bpel-console.rest-proxy.authentication.saml.key-alias"; //$NON-NLS-1$
+    public static final String SAML_AUTH_KEY_PASSWORD = "bpel-console.rest-proxy.authentication.saml.key-password"; //$NON-NLS-1$
 
     private Map<String, String> configProperties;
 
@@ -59,9 +69,9 @@ public class RestProxySAMLBearerTokenAuthProvider implements RestProxyAuthProvid
         String samlAssertion = SAMLBearerTokenUtil.createSAMLAssertion(getIssuer(), getService());
         if (isSignAssertions()) {
             try {
-//                KeyStore keystore = SAMLBearerTokenUtil.loadKeystore(getKeystorePath(), getKeystorePassword());
-//                KeyPair keyPair = SAMLBearerTokenUtil.getKeyPair(keystore, getAlias(), getAliasPassword());
-//                samlAssertion = SAMLBearerTokenUtil.signSAMLAssertion(samlAssertion, keyPair);
+                KeyStore keystore = SAMLBearerTokenUtil.loadKeystore(getKeystorePath(), getKeystorePassword());
+                KeyPair keyPair = SAMLBearerTokenUtil.getKeyPair(keystore, getAlias(), getAliasPassword());
+                samlAssertion = SAMLBearerTokenUtil.signSAMLAssertion(samlAssertion, keyPair);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -73,56 +83,49 @@ public class RestProxySAMLBearerTokenAuthProvider implements RestProxyAuthProvid
      * @return the configured saml issuer
      */
     private String getIssuer() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.issuer";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_ISSUER);
     }
 
     /**
      * @return the configured saml service
      */
     private String getService() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.service";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_SERVICE);
     }
 
     /**
      * @return whether saml assertions should be digitally signed
      */
     private boolean isSignAssertions() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.sign-assertions";
-        return "true".equals(this.configProperties.get(propKey));
+        return "true".equals(this.configProperties.get(SAML_AUTH_SIGN_ASSERTIONS));
     }
 
     /**
      * @return the configured digital signature keystore
      */
     protected String getKeystorePath() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.keystore";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_KEYSTORE);
     }
 
     /**
      * @return the configured keystore password
      */
     protected String getKeystorePassword() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.keystore-password";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_KEYSTORE_PASSWORD);
     }
 
     /**
      * @return the configured keystore alias
      */
     protected String getAlias() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.key-alias";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_KEY_ALIAS);
     }
 
     /**
      * @return the configured keystore alias password
      */
     protected String getAliasPassword() {
-        String propKey = "gwt-console.rest-proxy.authentication.saml.key-password";
-        return this.configProperties.get(propKey);
+        return this.configProperties.get(SAML_AUTH_KEY_PASSWORD);
     }
 
 }

@@ -23,6 +23,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,7 +34,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
+import org.overlord.commons.config.ConfigurationFactory;
 
 /**
  * A simple proxy servlet for REST invocations.  The primary purpose of this servlet is
@@ -49,6 +52,30 @@ public class RestProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = 8689929059530563599L;
 
+    public static final String CONFIG_FILE_NAME     = "bpel-console.config.file.name"; //$NON-NLS-1$
+    public static final String CONFIG_FILE_REFRESH  = "bpel-console.config.file.refresh"; //$NON-NLS-1$
+    public static final String PROXY_URL = "bpel-console.rest-proxy.proxy-url"; //$NON-NLS-1$
+    public static final String AUTH_PROVIDER = "bpel-console.rest-proxy.authentication.provider"; //$NON-NLS-1$
+    public static final String BASIC_AUTH_USER = "bpel-console.rest-proxy.authentication.basic.user"; //$NON-NLS-1$
+    public static final String BASIC_AUTH_PASS = "bpel-console.rest-proxy.authentication.basic.password"; //$NON-NLS-1$
+
+    public static Configuration appconfig;
+    static {
+        String configFile = System.getProperty(CONFIG_FILE_NAME);
+        String refreshDelayStr = System.getProperty(CONFIG_FILE_REFRESH);
+        Long refreshDelay = 5000l;
+        if (refreshDelayStr != null) {
+            refreshDelay = new Long(refreshDelayStr);
+        }
+
+        appconfig = ConfigurationFactory.createConfig(
+                configFile,
+                "bpel-console.properties", //$NON-NLS-1$
+                refreshDelay,
+                null,
+                RestProxyServlet.class);
+    }
+    
     private String proxyUrl;
     private String authProviderClassName;
     private Map<String, String> params = new HashMap<String, String>();
@@ -65,20 +92,21 @@ public class RestProxyServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        proxyUrl = config.getInitParameter("proxy-url");
+        proxyUrl = appconfig.getString(PROXY_URL);
         if (proxyUrl == null)
-            throw new ServletException("Missing init parameter 'proxy-url'.");
-        authProviderClassName = config.getInitParameter("authentication-provider");
+            throw new ServletException("Missing config property: " + PROXY_URL);
+        authProviderClassName = appconfig.getString(AUTH_PROVIDER);
         
-        Enumeration<?> parameterNames = config.getInitParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String paramName = (String) parameterNames.nextElement();
-            String paramValue = config.getInitParameter(paramName);
-            params.put("gwt-console.rest-proxy." + paramName, paramValue);
+        @SuppressWarnings("unchecked")
+        Iterator<String> keys = appconfig.getKeys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String val = appconfig.getString(key);
+            params.put(key, val);
         }
     }
     
-    /* (non-Javadoc)
+    /**
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override

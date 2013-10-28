@@ -26,6 +26,8 @@
       <module name="org.overlord.commons.overlord-commons-auth" />
       <module name="org.apache.httpcomponents" />
       <module name="org.apache.commons.codec" />
+      <module name="org.apache.commons.configuration" />
+      <module name="org.apache.commons.lang" />
       </dependencies>
   </deployment>
 </jboss-deployment-structure>

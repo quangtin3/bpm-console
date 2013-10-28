@@ -13,22 +13,6 @@
         <servlet-name>RestProxy</servlet-name>
         <servlet-class>org.jboss.bpm.console.server.RestProxyServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-        <init-param>
-            <param-name>proxy-url</param-name>
-            <param-value>SCHEME://HOST:PORT/bpel-console-server/rs/</param-value>
-        </init-param>
-        <init-param>
-            <param-name>authentication-provider</param-name>
-            <param-value>org.jboss.bpm.console.server.RestProxySAMLBearerTokenAuthProvider</param-value>
-        </init-param>
-        <init-param>
-            <param-name>authentication.saml.issuer</param-name>
-            <param-value>/bpel-console</param-value>
-        </init-param>
-        <init-param>
-            <param-name>authentication.saml.service</param-name>
-            <param-value>/bpel-console-server</param-value>
-        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>RestProxy</servlet-name>
