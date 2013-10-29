@@ -24,6 +24,7 @@ import com.mvc4g.client.Controller;
  */
 public class LoadProcessHistoryAction extends AbstractRESTAction {
 	
+	public static final int PAGE_SIZE = 20;
 	public static final String ID = LoadProcessHistoryAction.class.getName();
 		
 	@Override
@@ -51,6 +52,9 @@ public class LoadProcessHistoryAction extends AbstractRESTAction {
 			sbuffer.append("&correlationkey=");
 			sbuffer.append(URL.encode(searchEvent.getKey().replace("=", "~")));
 		}
+		sbuffer.append("&startpos="+(searchEvent.getPage()*PAGE_SIZE));
+		sbuffer.append("&maxnum="+PAGE_SIZE);
+		
 		return URLBuilder.getInstance().getProcessHistoryURL(searchEvent.getDefinitionKey(), sbuffer.toString());
 	}
 
@@ -68,8 +72,11 @@ public class LoadProcessHistoryAction extends AbstractRESTAction {
 		ProcessHistoryInstanceListView view = (ProcessHistoryInstanceListView) controller.getView(ProcessHistoryInstanceListView.ID);
 		List<HistoryProcessInstanceRef> ref = JSOParser.parseProcessDefinitionHistory(response.getText());
 		view.update(ref);
-		
+
 		ConsoleLog.debug("Loaded " + ref.size() + " process instance(s) : " + response.getText());
+		
+		ProcessHistorySearchView search = (ProcessHistorySearchView) controller.getView(ProcessHistorySearchView.ID);
+		search.handleResponse(ref);
 	}
 
 }
