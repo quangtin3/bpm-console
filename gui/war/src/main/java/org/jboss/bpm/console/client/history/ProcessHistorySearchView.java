@@ -12,7 +12,9 @@ import org.gwt.mosaic.ui.client.layout.BoxLayout;
 import org.gwt.mosaic.ui.client.layout.BoxLayoutData;
 import org.gwt.mosaic.ui.client.layout.LayoutPanel;
 import org.gwt.mosaic.ui.client.layout.MosaicPanel;
+import org.jboss.bpm.console.client.model.HistoryProcessInstanceRef;
 import org.jboss.bpm.console.client.model.ProcessDefinitionRef;
+import org.jboss.bpm.console.client.util.ConsoleLog;
 import org.jboss.errai.workspaces.client.api.ProvisioningCallback;
 import org.jboss.errai.workspaces.client.api.WidgetProvider;
 import org.jboss.errai.workspaces.client.framework.Registry;
@@ -24,6 +26,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.mvc4g.client.Controller;
 import com.mvc4g.client.Event;
@@ -48,6 +51,12 @@ public class ProcessHistorySearchView implements WidgetProvider, ViewInterface {
 	private DateBox startTime;
 	
 	private DateBox endTime;
+	
+	private Button nextButton;
+	private Button prevButton;
+	private Label pageLabel;
+	
+	private int page;
 
     private ProvisioningCallback callback;
 			
@@ -113,6 +122,7 @@ public class ProcessHistorySearchView implements WidgetProvider, ViewInterface {
 				event.setStatus(theStatus);
 				event.setStartTime(theDate.getTime());
 				event.setEndTime(edate.getTime());
+				event.setPage(page);
 				event.setKey(ckey);
 				
 				controller.handleEvent(new Event(LoadProcessHistoryAction.ID, event));
@@ -141,6 +151,118 @@ public class ProcessHistorySearchView implements WidgetProvider, ViewInterface {
         formPanel.add(createStartTimeDateBox(bld1));        
         formPanel.add(createEndTimeDateBox(bld1));
 
+        prevButton=new Button("<< Previous", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent clickEvent) {
+
+                if (definitionList.getItemCount() < 1) {
+                    return;
+                }
+
+				String proDef = definitionList.getValue(definitionList.getSelectedIndex());
+
+                String definitionId = null;
+
+                for (ProcessDefinitionRef ref : processDefinitions) {
+                    if (proDef.equals(ref.getName())) {
+                        definitionId = ref.getId();
+                    }
+                }
+
+				String theStatus = processStatusList.getValue(processStatusList.getSelectedIndex());
+				Date theDate = startTime.getValue();
+				if (theDate == null) {
+					theDate = new Date(103,1,1);
+				}
+				Date edate = endTime.getValue();
+				if (edate == null) {
+					edate = new Date();
+				}
+				String ckey = correlationKey.getValue();
+				
+				ProcessSearchEvent event = new ProcessSearchEvent();
+				event.setDefinitionKey(definitionId);
+				event.setStatus(theStatus);
+				event.setStartTime(theDate.getTime());
+				event.setEndTime(edate.getTime());
+				
+				page--;
+				
+				if (page == 0) {
+					prevButton.setEnabled(false);
+				}
+				
+				pageLabel.setText(""+(page+1));
+				event.setPage(page);
+				event.setKey(ckey);
+				
+				controller.handleEvent(new Event(LoadProcessHistoryAction.ID, event));
+			}
+			
+		});
+        prevButton.setEnabled(false);
+
+        nextButton=new Button("Next >>", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent clickEvent) {
+
+                if (definitionList.getItemCount() < 1) {
+                    return;
+                }
+
+				String proDef = definitionList.getValue(definitionList.getSelectedIndex());
+
+                String definitionId = null;
+
+                for (ProcessDefinitionRef ref : processDefinitions) {
+                    if (proDef.equals(ref.getName())) {
+                        definitionId = ref.getId();
+                    }
+                }
+
+				String theStatus = processStatusList.getValue(processStatusList.getSelectedIndex());
+				Date theDate = startTime.getValue();
+				if (theDate == null) {
+					theDate = new Date(103,1,1);
+				}
+				Date edate = endTime.getValue();
+				if (edate == null) {
+					edate = new Date();
+				}
+				String ckey = correlationKey.getValue();
+				
+				ProcessSearchEvent event = new ProcessSearchEvent();
+				event.setDefinitionKey(definitionId);
+				event.setStatus(theStatus);
+				event.setStartTime(theDate.getTime());
+				event.setEndTime(edate.getTime());
+				
+				page++;
+				
+				pageLabel.setText(""+(page+1));
+				
+				event.setPage(page);
+				event.setKey(ckey);
+				
+				controller.handleEvent(new Event(LoadProcessHistoryAction.ID, event));
+			}
+			
+		});
+        nextButton.setEnabled(false);
+        
+		MosaicPanel buttonBox = new MosaicPanel(new BoxLayout());
+		buttonBox.add(prevButton);
+		buttonBox.add(nextButton);
+		
+		pageLabel = new Label("1");
+		
+		buttonBox.add(pageLabel);		
+        
+		buttonBox.setWidgetSpacing(10);
+		
+		panel.add(buttonBox, new BoxLayoutData());
 		
 		ProcessHistoryInstanceListView listview = new ProcessHistoryInstanceListView();
 		final DecoratedTabLayoutPanel tabPanel = new DecoratedTabLayoutPanel(false);
@@ -161,6 +283,11 @@ public class ProcessHistorySearchView implements WidgetProvider, ViewInterface {
 		panel.add(tabPanel, new BoxLayoutData(BoxLayoutData.FillStyle.BOTH));
 
         callback.onSuccess(panel);
+	}
+	
+	protected void handleResponse(List<HistoryProcessInstanceRef> result) {
+		nextButton.setEnabled(result.size() == LoadProcessHistoryAction.PAGE_SIZE);
+		prevButton.setEnabled(page > 0);
 	}
 
 	

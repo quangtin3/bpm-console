@@ -15,8 +15,8 @@ import org.jboss.bpm.console.client.model.ProcessDefinitionRef;
  */
 public interface ProcessHistoryPlugin {
 	
-	List<HistoryProcessInstanceRef> getHistoryProcessInstances(String definitionkey, String status,
-																long starttime, long endtime, String correlationkey);
+    List<HistoryProcessInstanceRef> getHistoryProcessInstances(String definitionkey, String status,
+            long starttime, long endtime, String correlationkey, int startpos, int maxnum);
 
     List<ProcessDefinitionRef> getProcessDefinitions();
 
