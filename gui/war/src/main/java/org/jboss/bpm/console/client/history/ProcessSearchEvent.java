@@ -18,6 +18,8 @@ public class ProcessSearchEvent {
 	private long startTime;
 	
 	private long endTime;
+	
+	private int page;
 
 	public String getDefinitionKey() {
 		return definitionKey;
@@ -57,6 +59,14 @@ public class ProcessSearchEvent {
 
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
+	}
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
 	}
 	
 	

@@ -53,20 +53,34 @@ public class ProcessHistoryFacade {
 	@Produces("applications/json")
 	@Path("definition/{id}/instances")
 	public Response findHisotryInstances(@PathParam("id") String id, @Context UriInfo info) {
-		String status = info.getQueryParameters().getFirst("status");
-		String stime = info.getQueryParameters().getFirst("starttime");
-		String etime = info.getQueryParameters().getFirst("endtime");
-		String ckey = info.getQueryParameters().getFirst("correlationkey");
+        String status = info.getQueryParameters().getFirst("status");
+        String stime = info.getQueryParameters().getFirst("starttime");
+        String etime = info.getQueryParameters().getFirst("endtime");
+        String ckey = info.getQueryParameters().getFirst("correlationkey");
+        String startpos = info.getQueryParameters().getFirst("startpos");
+        String maxnum = info.getQueryParameters().getFirst("maxnum");
 
         checkNotNull("definitionkey", id);
         checkNotNull("status", status);
         checkNotNull("starttime", stime);
         checkNotNull("endtime", etime);
+        
+        int startposValue=0;
+        int maxnumValue=0;
+        
+        if (startpos != null) {
+            startposValue = new Integer(startpos);
+        }
+        
+        if (maxnum != null) {
+            maxnumValue = new Integer(maxnum);
+        }
 
-		List<HistoryProcessInstanceRef> refs = getProcessHistoryPlugin().getHistoryProcessInstances(id, status, new Long(stime), new Long(etime), ckey);
-		HistoryProcessInstanceRefWrapper wrapper = new HistoryProcessInstanceRefWrapper(refs);
-		
-		return createJsonResponse(wrapper);
+        List<HistoryProcessInstanceRef> refs = getProcessHistoryPlugin().getHistoryProcessInstances(id,
+                        status, new Long(stime), new Long(etime), ckey, startposValue, maxnumValue);
+        HistoryProcessInstanceRefWrapper wrapper = new HistoryProcessInstanceRefWrapper(refs);
+        
+        return createJsonResponse(wrapper);
 	}
 
 
