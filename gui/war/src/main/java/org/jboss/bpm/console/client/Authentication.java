@@ -129,12 +129,8 @@ public class Authentication
 
             public void execute()
             {
-              if (config.getProfileName().equalsIgnoreCase("BPEL Console")) {
-                  checkBPELEngineAndRequestAssignedRoles();
-              } else {
-                  requestAssignedRoles();
-                  loadBootstrapAction();
-              }
+              requestAssignedRoles();
+              loadBootstrapAction();
             }
           }
       );
@@ -149,38 +145,6 @@ public class Authentication
     return loggedInSince;
   }
   
-  private void checkBPELEngineAndRequestAssignedRoles() {
-	  RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, URLBuilder.getInstance().getRiftSawServerStatusURL());
-	  try {
-		rb.sendRequest(null, new RequestCallback(){
-
-			public void onError(Request request, Throwable t) {
-				 if (callback != null) {
-		            callback.onLoginFailed(request, t);
-				 } else {
-		            throw new RuntimeException("Unknown exception upon login attempt", t);
-				 }
-			}
-
-			public void onResponseReceived(Request request, Response response) {
-				if (response.getText().equalsIgnoreCase("false")) {
-					if (callback != null) {
-						callback.onLoginFailed(request, new Exception("BPEL Engine is not available."));
-					}
-				} else {
-					requestAssignedRoles();
-					loadBootstrapAction();
-				}
-			}
-			  
-		  });
-	} catch (RequestException e) {
-		throw new RuntimeException("Unknown error upon login attempt", e);
-	}
-	          
-  }
-  
-
   /**
    * Login using specific credentials.
    * This delegates to {@link com.google.gwt.http.client.RequestBuilder#setUser(String)}
